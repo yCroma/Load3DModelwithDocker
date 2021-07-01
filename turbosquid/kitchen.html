@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>LoadOBJModel</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r127/three.min.js"></script>
+	<script src="/js/OrbitControls.js"></script>
+	<script src="/js/OBJLoader.js"></script>
+	<script src="/js/MTLLoader.js"></script>
+	<script src="/js/FBXLoader.js"></script>
+	<!-- FBXLoader のために fflateが必要 -->
+	<script src="https://cdn.jsdelivr.net/npm/fflate/umd/index.js"></script>
+</head>
+
+<body>
+	<h1>obj</h1>
+	<canvas id="obj"></canvas>
+	<script>
+		window.addEventListener('load', loadobj);
+		function loadobj() {
+			// サイズを指定
+			const width = 960;
+			const height = 540;
+
+			// レンダラーを作成
+			const canvasElement = document.querySelector('#obj')
+			const renderer = new THREE.WebGLRenderer({
+				canvas: canvasElement
+			});
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setSize(width, height);
+
+			// シーンを作成
+			const scene = new THREE.Scene();
+
+			// カメラを作成
+			const camera = new THREE.PerspectiveCamera(45, width / height);
+			camera.position.set(0, 0, +50);
+
+			// カメラコントローラーを作成
+			const controls = new THREE.OrbitControls(camera, canvasElement)
+
+			// 環境光追加
+			const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+			scene.add(ambientLight);
+
+			// 3Dモデルを読み込む
+			const loader = new THREE.OBJLoader();
+			loader.load(
+				// resource URL
+				'/turbosquid/kitchen/kitchen.obj',
+				function (object) {
+					scene.add(object)
+				},
+				function (xhr) {
+					console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+				},
+				function (error) {
+					console.log('An error happend')
+				}
+			)
+			console.log("console.dirを試す")
+			console.dir(loader)
+
+			// Helper を追加
+			// 座標軸の追加
+			const axesHelper = new THREE.AxesHelper(1000)
+			scene.add(axesHelper)
+
+			// x軸, y軸上にマス目を追加
+			// TODO: モデルのサイズに合わせて形が変わること
+			const gridsize = 100;
+			const griddevisions = 1000;
+
+			const gridHelper = new THREE.GridHelper(gridsize, griddevisions)
+			scene.add(gridHelper)
+
+			tick();
+
+			// 毎フレーム時に実行されるループイベントです
+			function tick() {
+				renderer.render(scene, camera); // レンダリング
+				requestAnimationFrame(tick);
+			}
+		}	
+	</script>
+	<h1>objtx</h1>
+	<canvas id="objtx"></canvas>
+	<script>
+		window.addEventListener('load', loadobj);
+		function loadobj() {
+			// サイズを指定
+			const width = 960;
+			const height = 540;
+
+			// レンダラーを作成
+			const canvasElement = document.querySelector('#objtx')
+			const renderer = new THREE.WebGLRenderer({
+				canvas: canvasElement
+			});
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setSize(width, height);
+
+			// シーンを作成
+			const scene = new THREE.Scene();
+
+			// カメラを作成
+			const camera = new THREE.PerspectiveCamera(45, width / height);
+			camera.position.set(0, 0, +50);
+
+			// カメラコントローラーを作成
+			const controls = new THREE.OrbitControls(camera, canvasElement)
+
+			// 環境光追加
+			const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+			scene.add(ambientLight);
+
+			// 3Dモデルを読み込む
+			const mtlloader = new THREE.MTLLoader()
+			mtlloader.load('/turbosquid/kitchen/kitchen.mtl', (materials) => {
+				materials.preload();
+
+				const objloader = new THREE.OBJLoader();
+				objloader.setMaterials(materials)
+				objloader.load('/turbosquid/kitchen/kitchen.obj', (object) => {
+					scene.add(object)
+				})
+			})
+
+			// Helper を追加
+			// 座標軸の追加
+			const axesHelper = new THREE.AxesHelper(1000)
+			scene.add(axesHelper)
+
+			// x軸, y軸上にマス目を追加
+			// TODO: モデルのサイズに合わせて形が変わること
+			const gridsize = 100;
+			const griddevisions = 1000;
+
+			const gridHelper = new THREE.GridHelper(gridsize, griddevisions)
+			scene.add(gridHelper)
+
+			tick();
+
+			// 毎フレーム時に実行されるループイベントです
+			function tick() {
+				renderer.render(scene, camera); // レンダリング
+				requestAnimationFrame(tick);
+			}
+		}	
+	</script>
+	<h1>fbx</h1>
+	<canvas id="fbx"></canvas>
+	<script>
+		window.addEventListener('load', loadobj);
+		function loadobj() {
+			// サイズを指定
+			const width = 960;
+			const height = 540;
+
+			// レンダラーを作成
+			const canvasElement = document.querySelector('#fbx')
+			const renderer = new THREE.WebGLRenderer({
+				canvas: canvasElement
+			});
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setSize(width, height);
+
+			// シーンを作成
+			const scene = new THREE.Scene();
+
+			// カメラを作成
+			const camera = new THREE.PerspectiveCamera(45, width / height);
+			camera.position.set(0, 0, +50);
+
+			// カメラコントローラーを作成
+			const controls = new THREE.OrbitControls(camera, canvasElement)
+
+			// 平行光源追加
+			const directionalLight = new THREE.DirectionalLight(0xFFFFFF);
+			directionalLight.position.set(1, 1, 1);
+			// シーンに追加
+			scene.add(directionalLight);
+
+			// 環境光追加
+			const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+			scene.add(ambientLight);
+
+			// 3Dモデルを読み込む
+			const loader = new THREE.FBXLoader();
+			loader.load(
+				// resource URL
+				'/turbosquid/kitchen/kitchen.fbx',
+				function (object) {
+					scene.add(object)
+				},
+				function (xhr) {
+					console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+				},
+				function (error) {
+					console.log('An error happend')
+				}
+			)
+			console.log("console.dirを試す")
+			console.dir(loader)
+
+			// Helper を追加
+			// 座標軸の追加
+			const axesHelper = new THREE.AxesHelper(1000)
+			scene.add(axesHelper)
+
+			// x軸, y軸上にマス目を追加
+			// TODO: モデルのサイズに合わせて形が変わること
+			const gridsize = 100;
+			const griddevisions = 1000;
+
+			const gridHelper = new THREE.GridHelper(gridsize, griddevisions)
+			scene.add(gridHelper)
+
+			const directionallighthelper = new THREE.DirectionalLightHelper(directionalLight, 5);
+			scene.add(directionallighthelper);
+
+			tick();
+
+			// 毎フレーム時に実行されるループイベントです
+			function tick() {
+				renderer.render(scene, camera); // レンダリング
+				requestAnimationFrame(tick);
+			}
+		}	
+	</script>
+
+</body>
+
+</html>
