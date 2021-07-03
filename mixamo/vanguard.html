@@ -70,7 +70,7 @@
 
 			_LoadAnimationModel() {
 				const loader = new FBXLoader();
-				loader.setPath('/mixamo/vanguard/')
+				loader.setPath('/mixamo/characters/')
 				loader.load('vanguard.fbx', (fbx) => {
 					fbx.scale.setScalar(0.1);
 
@@ -85,6 +85,7 @@
 						idle.play();
 					})
 					*/
+					anim.setPath('/mixamo/animations/')
 					anim.load('capoeira.fbx', (anim) => {
 						const m = new THREE.AnimationMixer(fbx);
 						this._mixers.push(m);
