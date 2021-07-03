@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>LoadOBJModel</title>
+</head>
+
+<body>
+	<h1>fbx</h1>
+	<script type="module">
+		import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
+
+		import { FBXLoader } from 'https://cdn.jsdelivr.net/npm/three@0.118.1/examples/jsm/loaders/FBXLoader.js';
+		import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.118.1/examples/jsm/loaders/GLTFLoader.js';
+		import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js';
+
+		let _APP = null;
+		window.addEventListener('DOMContentLoaded', () => {
+			_APP = new LoadModelDemo()
+		})
+
+		class LoadModelDemo {
+			constructor() {
+				this._Initialize();
+			}
+
+			_Initialize() {
+				this._renderer = new THREE.WebGLRenderer({});
+				this._renderer.setPixelRatio(window.devicePixelRatio)
+				this._renderer.setSize(window.innerWidth, window.innerHeight)
+
+				document.body.appendChild(this._renderer.domElement)
+
+				const fov = 60;
+				const aspect = 1920 / 1080;
+				const near = 1.0;
+				const far = 1000.0;
+				this._camera = new THREE.PerspectiveCamera(fov, aspect, near, far)
+				this._camera.position.set(75, 20, 0);
+
+				this._scene = new THREE.Scene();
+
+				let light = new THREE.DirectionalLight(0xFFFFFF, 1.0);
+				light.position.set(20, 100, 10);
+				this._scene.add(light)
+
+				light = new THREE.AmbientLight(0xFFFFFF, 4.0)
+				this._scene.add(light)
+
+				const controls = new OrbitControls(
+					this._camera, this._renderer.domElement)
+				controls.target.set(0, 20, 0);
+				// カメラの位置を任意に設定した際は、コントロールをアップデートしないといけない
+				controls.update();
+
+				this._mixers = []
+				this._previousRAF = null;
+
+				this._LoadAnimationModel();
+
+				this._RAF();
+			}
+
+			_LoadAnimationModel() {
+				const loader = new FBXLoader();
+				loader.setPath('/mixamo/characters/')
+				loader.load('ely_k_atienza.fbx', (fbx) => {
+					fbx.scale.setScalar(0.1);
+					console.log("fbx", fbx)
+					// animation
+					const anim = new FBXLoader()
+					anim.setPath('/mixamo/animations/')
+					anim.load('shoved_reaction_with_spin.fbx', (anim) => {
+						const m = new THREE.AnimationMixer(fbx);
+						this._mixers.push(m);
+						const idle = m.clipAction(anim.animations[0]);
+						idle.play();
+						console.log("anim", anim)
+						console.log("anim duration: ", anim.animations[0].duration)
+						console.log("anim frame", anim.animations[0].duration * 30)
+					})
+
+					this._scene.add(fbx)
+				})
+			}
+
+			_Step(timeElapsed) {
+				const timeElapsedS = timeElapsed * 0.001;
+				if (this._mixers) {
+					this._mixers.map(m => m.update(timeElapsedS))
+				}
+			}
+
+			_RAF() {
+				requestAnimationFrame((t) => {
+					if (this._previousRAF === null) {
+						this._previousRAF = t;
+					}
+
+					this._RAF();
+
+					this._renderer.render(this._scene, this._camera)
+					this._Step(t - this._previousRAF);
+					this._previousRAF = t;
+				})
+			}
+		}
+	</script>
+</body>
+
+</html>
