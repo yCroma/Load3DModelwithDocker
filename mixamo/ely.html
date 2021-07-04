@@ -164,6 +164,21 @@
 
 		}
 	</script>
+	<script>
+		const framebar = document.getElementById("framebar")
+		console.log("framebar min: ", framebar.min)
+		console.log("framebar max: ", framebar.max)
+		console.log("framebar step: ", framebar.step)
+		const currentframe = document.getElementById("currentframe")
+		currentframe.value = 0;
+		framebar.addEventListener("input", (event) => {
+			currentframe.value = event.target.value
+			console.log("framebar", event)
+		})
+		currentframe.addEventListener("input", (event) => {
+			framebar.value = event.target.value
+		})
+	</script>
 </body>
 
 </html>
