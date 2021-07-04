@@ -90,7 +90,9 @@
 						//anim.load('listening_to_music.fbx', (anim) => {
 						const m = new THREE.AnimationMixer(fbx);
 						this._mixers.push(m);
+						console.log("mixers: ", this._mixers)
 						const idle = m.clipAction(anim.animations[0]);
+						console.log("idle: ", idle)
 						idle.play();
 						console.log("anim", anim)
 						console.log("anim duration: ", anim.animations[0].duration)
