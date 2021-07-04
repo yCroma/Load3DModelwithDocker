@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>raycaster</title>
+</head>
+
+<body>
+	<h1>raycaster</h1>
+	<canvas id="raycaster"></canvas>
+	<script type="module">
+		import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
+
+		import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js';
+
+		let _APP = null;
+		window.addEventListener('DOMContentLoaded', () => {
+			_APP = new LoadRaycaster()
+		})
+
+		class LoadRaycaster {
+			constructor() {
+				this._Initilize()
+			}
+
+			_Initilize() {
+				this._renderer = new THREE.WebGLRenderer({
+					canvas: document.getElementById("raycaster")
+				})
+				this._renderer.setPixelRatio(window.devicePixelRatio)
+
+				const width = 960;
+				const height = 590;
+
+				this._renderer.setSize(width, height)
+
+				const fov = 60;
+				const aspect = 1920 / 1080;
+				const near = 1.0;
+				const far = 1000.0;
+				this._camera = new THREE.PerspectiveCamera(fov, aspect, near, far)
+				this._camera.position.set(75, 20, 0);
+
+				this._scene = new THREE.Scene();
+
+				let light = new THREE.DirectionalLight(0xFFFFFF, 1.0)
+				light.position.set(20, 100, 100);
+				this._scene.add(light)
+
+				light = new THREE.AmbientLight(0xFFFFFF, 4.0)
+				this._scene.add(light)
+
+				const controls = new OrbitControls(
+					this._camera, this._renderer.domElement
+				)
+				controls.target.set(0, 20, 0)
+				controls.update();
+
+				// geometry
+				const geometry = new THREE.ConeGeometry(5, 20, 4)
+				const material = new THREE.MeshBasicMaterial({ color: 0xA0A0F0 });
+				const cone = new THREE.Mesh(geometry, material)
+				console.log("3Dobject: ", cone)
+				this._scene.add(cone)
+
+				this._RAF();
+			}
+
+			_RAF() {
+				requestAnimationFrame(() => {
+					this._RAF()
+					this._renderer.render(this._scene, this._camera)
+				})
+			}
+		}
+	</script>
+</body>
+
+</html>
