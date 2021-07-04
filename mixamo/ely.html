@@ -87,6 +87,7 @@
 					const anim = new FBXLoader()
 					anim.setPath('/mixamo/animations/')
 					anim.load('shoved_reaction_with_spin.fbx', (anim) => {
+						//anim.load('listening_to_music.fbx', (anim) => {
 						const m = new THREE.AnimationMixer(fbx);
 						this._mixers.push(m);
 						const idle = m.clipAction(anim.animations[0]);
