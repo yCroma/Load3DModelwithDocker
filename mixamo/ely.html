@@ -92,7 +92,12 @@
 			}
 
 			_Step(timeElapsed) {
+				// timeElapsed はms単位での進んだ時間を表示してくれる
+				//console.log("timeElapsed: ", timeElapsed)
+
+				// mixerに読み込ませるときはs単位になるから、 0.001倍する
 				const timeElapsedS = timeElapsed * 0.001;
+				//console.log("timeElapsedS: ", timeElapsedS)
 				if (this._mixers) {
 					this._mixers.map(m => m.update(timeElapsedS))
 				}
