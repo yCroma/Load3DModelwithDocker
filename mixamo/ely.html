@@ -11,6 +11,14 @@
 <body>
 	<h1>fbx</h1>
 	<canvas id="fbx"></canvas>
+	<div>
+		<button id="start">再生</button>
+		<button id="pause">停止</button>
+		<button id="reset">リセット</button>
+		<button id="stop">初期化して止める</button>
+		<input type="range" id="framebar" value="0" min="0" max="100" step="1">
+		<input type="number" id="currentframe">
+	</div>
 	<script type="module">
 		import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
 
@@ -86,6 +94,7 @@
 						console.log("anim", anim)
 						console.log("anim duration: ", anim.animations[0].duration)
 						console.log("anim frame", anim.animations[0].duration * 30)
+						const actioncontroler = new ActionControler(idle)
 					})
 
 					this._scene.add(fbx)
@@ -117,6 +126,42 @@
 					this._previousRAF = t;
 				})
 			}
+		}
+
+		class ActionControler {
+			constructor(animationAction) {
+				this.animationAction = animationAction
+
+				// DOM関連
+				this.startbutton = document.getElementById("start")
+				this.pausebutton = document.getElementById("pause")
+				this.resetbutton = document.getElementById("reset")
+				this.stopbutton = document.getElementById("stop")
+
+				this._AddEventListener()
+			}
+
+			_AddEventListener() {
+				this.startbutton.addEventListener("click", (event) => {
+					this.animationAction.paused = false;
+				})
+
+				this.pausebutton.addEventListener("click", (event) => {
+					this.animationAction.paused = true;
+					console.log("current mixer: ", this.animationAction.getMixer())
+					console.log("current time: ", this.animationAction.time)
+				})
+
+				this.resetbutton.addEventListener("click", (event) => {
+					this.animationAction.reset()
+				})
+
+				this.stopbutton.addEventListener("click", (event) => {
+					this.animationAction.stop()
+				})
+
+			}
+
 		}
 	</script>
 </body>
