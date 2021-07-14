@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>fileupload example</title>
+</head>
+
+<body>
+	<h2>file upload</h2>
+	<input type="file" id="fileIuput" multiple="multiple">
+	<script>
+		document
+			.getElementById("fileIuput")
+			.addEventListener("change", (event) => {
+				const files = Array.from(event.target.files)
+				console.log("files: ", files)
+
+				files.forEach((element, index) => {
+					console.log(`${index}番目のファイル: `)
+					console.dir(element)
+
+					const reader = new FileReader();
+					reader.onload = () => {
+						console.log("読み込み結果：", reader.result)
+					}
+					reader.readAsText(element)
+					//reader.readAsBinaryString(element)
+					//reader.readAsDataURL(element)
+				});
+
+			})
+
+	</script>
+</body>
+
+</html>
