@@ -49,7 +49,7 @@
 		const controls = new OrbitControls(camera, renderer.domElement)
 
 		const ambientLight = new THREE.AmbientLight(0xFFFFFF, 4.0)
-		//scene.add(ambientLight)
+		scene.add(ambientLight)
 
 		const uploaders = document.getElementById("uploaders")
 		uploaders.addEventListener("change", FileUploaded)
