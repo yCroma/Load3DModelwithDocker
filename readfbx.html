@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+
+<body>
+	<h2>read uploaded fbx model</h2>
+	<a href="/turbosquid/cushion_seater/cushion_seater.fbx" download>fbxファイルのサンプルのダウンロード</a>
+	<div id="uploaders">
+		<label for="fbx_uploader">fbxファイルをアップロード</label>
+		<input type="file" id="fbx_uploader">
+	</div>
+	<canvas id="renderer"></canvas>
+	<script type="module">
+		import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js';
+
+		import { FBXLoader } from 'https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/FBXLoader.js';
+		import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js';
+
+		import { Identify } from '/jsm/3DFile.js'
+
+		const renderer = new THREE.WebGLRenderer({
+			canvas: document.getElementById("renderer")
+		})
+		const renderer_size = {
+			width: 960,
+			height: 540
+		}
+		renderer.setPixelRatio(window.devicePixelRatio)
+		renderer.setSize(renderer_size.width, renderer_size.height)
+
+		const scene = new THREE.Scene();
+
+		const camera_property = {
+			fov: 45,
+			aspect: renderer_size.width / renderer_size.height
+		}
+		const camera = new THREE.PerspectiveCamera(camera_property.fov, camera_property.aspect)
+		camera.position.set(0, 0, 50)
+		const controls = new OrbitControls(camera, renderer.domElement)
+
+		const ambientLight = new THREE.AmbientLight(0xFFFFFF, 4.0)
+		scene.add(ambientLight)
+
+		const uploaders = document.getElementById("uploaders")
+		uploaders.addEventListener("change", FileUploaded)
+
+		function FileUploaded(event) {
+			const UploadedFiles = Array.from(event.target.files)
+			if (UploadedFiles.length > 0) {
+				console.log("Files: ", UploadedFiles)
+				UploadedFiles.forEach(file => {
+					const UploadedURL = window.URL.createObjectURL(file)
+					const FileIdentifier = Identify(file.name)
+					console.log("識別子：", FileIdentifier)
+					console.log("URL：", UploadedURL)
+					if (FileIdentifier === "fbx") {
+						const loader = new FBXLoader();
+						loader.load(
+							UploadedURL,
+							function (obj) {
+								console.log("obj: ", obj)
+								scene.add(obj)
+							}
+						)
+					} else {
+						console.log("対応していない拡張子です")
+					}
+
+					window.URL.revokeObjectURL(UploadedURL)
+
+				})
+			} else {
+				console.log("ファイルはアップロードされていません")
+			}
+		}
+
+		tick();
+
+		function tick() {
+			renderer.render(scene, camera)
+			requestAnimationFrame(tick)
+		}
+	</script>
+	<script>
+								// ファイルを読み込んだ時に、仮のURLが生成されるか試す
+								// →　生成されてくれたら、three.jsをそのまま利用できる
+								// →　されなかったらテキストを読み込んでくれるAPIを探すか、実装する
+
+								// objファイルを読み込んでテキストが出力されるか試す
+								// テキストが出力されたら、それを読み込んで3Dモデルを表示することができるか試す
+	</script>
+</body>
+
+</html>
