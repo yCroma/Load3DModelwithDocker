@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>DatGUI</title>
+</head>
+
+<body>
+	<canvas id="myCanvas"></canvas>
+	<script type="module">
+		import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.127/build/three.module.js';
+
+		import { GUI } from 'https://cdn.jsdelivr.net/npm/three@0.127/examples/jsm/libs/dat.gui.module.js';
+
+		import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.127/examples/jsm/controls/OrbitControls.js';
+
+		const params = {
+
+		}
+
+		init();
+
+		function init() {
+			// サイズを指定
+			const width = 960;
+			const height = 540;
+
+			// レンダラーを作成
+			const renderer = new THREE.WebGLRenderer({
+				canvas: document.querySelector('#myCanvas'),
+			});
+			renderer.setSize(width, height);
+
+			// シーンを作成
+			const scene = new THREE.Scene();
+
+			// カメラを作成
+			const camera = new THREE.PerspectiveCamera(45, width / height);
+			camera.position.set(0, 0, +1000);
+
+			// 球体を作成
+			const geometry = new THREE.SphereGeometry(300, 30, 30);
+			// 画像を読み込む
+			const loader = new THREE.TextureLoader();
+			const texture = loader.load('./earthmap1k.jpg');
+			// マテリアルにテクスチャーを設定
+			const material = new THREE.MeshStandardMaterial({
+				map: texture,
+			});
+			// メッシュを作成
+			const mesh = new THREE.Mesh(geometry, material);
+			// 3D空間にメッシュを追加
+			scene.add(mesh);
+
+			// 平行光源
+			const directionalLight = new THREE.DirectionalLight(0xffffff);
+			directionalLight.position.set(1, 1, 1);
+			// シーンに追加
+			scene.add(directionalLight);
+
+			const controls = new OrbitControls(camera, renderer.domElement)
+
+			const gui = new GUI()
+			const LightFolder = gui.addFolder('Light')
+			const j = {
+				hello: "hello"
+			}
+			LightFolder.add(j, "hello")
+			const NestLightFolder = LightFolder.addFolder('NestLight')
+
+			const AddingFolder = gui.addFolder('Method')
+			const params = {
+				LightAdd: LightAdd,
+				LightRemove: LightRemove
+			}
+			AddingFolder.add(params, "LightAdd")
+
+			function LightAdd() {
+				console.log("Clicked!!")
+				params.Light1 = "Light1"
+				AddingFolder.add(params, "Light1")
+			}
+
+			AddingFolder.add(params, "LightRemove")
+			function LightRemove() {
+				console.log(AddingFolder)
+			}
+
+
+			tick();
+
+			// 毎フレーム時に実行されるループイベントです
+			function tick() {
+				// レンダリング
+				renderer.render(scene, camera);
+
+				requestAnimationFrame(tick);
+			}
+		}
+
+
+	</script>
+</body>
+
+</html>
